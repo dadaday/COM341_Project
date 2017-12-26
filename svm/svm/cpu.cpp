@@ -46,6 +46,7 @@ namespace svm
         } else if (instruction ==
                        CPU::INT_OPCODE) {
             std::cout << "Processing instruction: 'int'" << std::endl;
+            registers.ip += 2;
             switch (data)
             {
                 case 1:
@@ -56,7 +57,6 @@ namespace svm
                     //  _pic.isr_4();
                     //  break;
             }
-            registers.ip += 2;
         } else {
             std::cerr << "CPU: invalid opcode data. Skipping..."
                       << std::endl;

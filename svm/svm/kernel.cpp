@@ -52,7 +52,7 @@ namespace svm
                 // ToDo: Process the timer interrupt for the Round Robin
                 //  scheduler
     			if (processes.size() < 2) {
-                    std::cout << "Only one process. No scheduling necessary" << std::endl;
+                    std::cout << std::endl << "Only one process. No scheduling necessary" << std::endl;
     				return;
     			}
 
@@ -61,10 +61,10 @@ namespace svm
     			
                 if (_cycles_passed_after_preemption > _MAX_CYCLES_BEFORE_PREEMPTION) {
     				process_list_type::size_type next_process_index = (_current_process_index + 1) % processes.size();
-    				std::cout << "The process " << _current_process_index
+    				std::cout << "The process " << processes[_current_process_index].id
     					<< " has consumed its time slice " << _MAX_CYCLES_BEFORE_PREEMPTION << std::endl
     					<< "Switching to the next process: " << processes[next_process_index].id
-    					<< std::endl;
+    					<< std::endl << std::endl;
     				std::cout << "saving all registers from the CPU to the PCB of the previous process" << std::endl;
     				processes[_current_process_index].registers = board.cpu.registers;
     				processes[_current_process_index].state = Process::States::Ready;
@@ -72,12 +72,12 @@ namespace svm
     				_current_process_index = next_process_index;
     				board.cpu.registers = processes[_current_process_index].registers;
     				processes[_current_process_index].state = Process::States::Running;
-    				_cycles_passed_after_preemption = 0;
+    				_cycles_passed_after_preemption = 1;
     			}
                 else {
                     std::cout << "Allowing the current process " << processes[_current_process_index].id << " to run" << std::endl;
-                    std::cout << "the current cycle is: " << _cycles_passed_after_preemption << std::endl;
                 }
+                std::cout << "the current cycle is: " << _cycles_passed_after_preemption << std::endl;
 			};
 
             board.pic.isr_3 = [&]() {
@@ -97,7 +97,6 @@ namespace svm
                         _current_process_index = 0;
                     }
                     std::cout << "Switching the context to process " << processes[_current_process_index].id << std::endl;
-                    processes[_current_process_index].registers.ip -= 2;
                     board.cpu.registers = processes[_current_process_index].registers;
                     processes[_current_process_index].state = Process::States::Running;
                     _cycles_passed_after_preemption = 0;
