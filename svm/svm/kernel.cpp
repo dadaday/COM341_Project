@@ -29,14 +29,15 @@ namespace svm
 		if (scheduler == FirstComeFirstServed) {
 			board.pic.isr_0 = [&]() {
 				// ToDo: Process the timer interrupt for the FCFS
-                std::cout << "Nothing to do in timer interrupt" << std::endl;
+                std::cout << std::endl << "Nothing to do in timer interrupt" << std::endl;
+                std::cout << "Allowing the current process " << processes[_current_process_index].id << " to run" << std::endl;
 			};
 
 			board.pic.isr_3 = [&]() {
 				// ToDo: Process the first software interrupt for the FCFS
 				// Unload the current process
 
-                std::cout << "Processing the first software interrupt" << std::endl;
+                std::cout << std::endl << "Processing the first software interrupt" << std::endl;
                 std::cout << "Unloading the process " << processes[_current_process_index].id << std::endl;
                 processes.erase(processes.begin() + _current_process_index);
 
@@ -45,7 +46,7 @@ namespace svm
                     board.Stop();
                 }
                 else {
-                    std::cout << "Switching the context to process " << processes[_current_process_index].id << std::endl;
+                    std::cout << "Switching the context to the next process " << processes[_current_process_index].id << std::endl;
                     board.cpu.registers = processes[_current_process_index].registers;
                     processes[_current_process_index].state = Process::States::Running;
                     _cycles_passed_after_preemption = 0;
@@ -56,13 +57,30 @@ namespace svm
 			board.pic.isr_0 = [&]() {
 				// ToDo: Process the timer interrupt for the Shortest
 				//  Job scheduler
+                std::cout << std::endl << "Nothing to do in timer interrupt" << std::endl;
+                std::cout << "Allowing the current process " << processes[_current_process_index].id << " to run" << std::endl;
 			};
 
 			board.pic.isr_3 = [&]() {
 				// ToDo: Process the first software interrupt for the Shortest
 				//  Job scheduler
+                std::cout << std::endl << "Processing the first software interrupt" << std::endl;
 
 				// Unload the current process
+                std::cout << "Unloading the process " << processes[_current_process_index].id << std::endl;
+                processes.erase(processes.begin() + _current_process_index);
+
+                if (processes.empty()) {
+                    std::cout << "No more processes. Stopping the machine" << std::endl;
+                    board.Stop();
+                }
+                else {
+                    std::cout << "Switching the context to the next shortest process " << processes[_current_process_index].id << std::endl;
+                    board.cpu.registers = processes[_current_process_index].registers;
+                    processes[_current_process_index].state = Process::States::Running;
+                    _cycles_passed_after_preemption = 0;
+                }
+
 			};
 		} else if (scheduler == RoundRobin) {
 			board.pic.isr_0 = [&]() {
@@ -168,7 +186,15 @@ namespace svm
 			executable.size();
 
 		// ToDo: add the new process to an appropriate data structure
-		processes.push_back(process);
+        if (scheduler == ShortestJob) {
+            processes.push_back(process);
+            std::sort(processes.begin(), processes.end(), [](const Process &a, const Process &b) {
+                return a.sequential_instruction_count > b.sequential_instruction_count;
+            });
+        }
+        else {
+            processes.push_back(process);
+        }
 
 		// ToDo: process the data structure
 
