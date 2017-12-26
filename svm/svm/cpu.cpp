@@ -26,21 +26,26 @@ namespace svm
 
         if (instruction ==
                 CPU::MOVA_OPCODE) {
+            std::cout << "Processing instruction: 'mov a'" << std::endl;
             registers.a = data;
             registers.ip += 2;
         } else if (instruction ==
                        CPU::MOVB_OPCODE) {
+            std::cout << "Processing instruction: 'mov b'" << std::endl;
             registers.b = data;
             registers.ip += 2;
         } else if (instruction ==
                        CPU::MOVC_OPCODE) {
+            std::cout << "Processing instruction: 'mov c'" << std::endl;
             registers.c = data;
             registers.ip += 2;
         } else if (instruction ==
                        CPU::JMP_OPCODE) {
+            std::cout << "Processing instruction: 'jmp'" << std::endl;
             registers.ip += data;
         } else if (instruction ==
                        CPU::INT_OPCODE) {
+            std::cout << "Processing instruction: 'int'" << std::endl;
             switch (data)
             {
                 case 1:
