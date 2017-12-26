@@ -52,6 +52,7 @@ namespace svm
                 // ToDo: Process the timer interrupt for the Round Robin
                 //  scheduler
     			if (processes.size() < 2) {
+                    std::cout << "Only one process. No scheduling necessary" << std::endl;
     				return;
     			}
 
@@ -96,6 +97,7 @@ namespace svm
                         _current_process_index = 0;
                     }
                     std::cout << "Switching the context to process " << processes[_current_process_index].id << std::endl;
+                    processes[_current_process_index].registers.ip -= 2;
                     board.cpu.registers = processes[_current_process_index].registers;
                     processes[_current_process_index].state = Process::States::Running;
                     _cycles_passed_after_preemption = 0;
