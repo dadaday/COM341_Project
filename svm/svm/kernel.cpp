@@ -107,7 +107,7 @@ namespace svm
 					_current_process_index = next_process_index;
 					board.cpu.registers = processes[_current_process_index].registers;
 					processes[_current_process_index].state = Process::States::Running;
-					_cycles_passed_after_preemption = 1;
+					_cycles_passed_after_preemption = 1; //set to 1 to count this as the cycle of the process to which we switched
 				}
 				else {
 					std::cout << "Allowing the current process " << processes[_current_process_index].id << " to run" << std::endl;
@@ -189,8 +189,11 @@ namespace svm
         if (scheduler == ShortestJob) {
             processes.push_back(process);
             std::sort(processes.begin(), processes.end(), [](const Process &a, const Process &b) {
-                return a.sequential_instruction_count > b.sequential_instruction_count;
+                return a.sequential_instruction_count < b.sequential_instruction_count;
             });
+        }
+        else if (scheduler == Priority) {
+            
         }
         else {
             processes.push_back(process);
