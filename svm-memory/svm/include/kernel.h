@@ -70,7 +70,7 @@ namespace svm
             //          );
 
         private:
-            static const unsigned int _MAX_CYCLES_BEFORE_PREEMPTION = 100;
+            static const unsigned int _MAX_CYCLES_BEFORE_PREEMPTION = 2;
 
             Process::process_id_type _last_issued_process_id;
             Memory::ram_type::size_type _last_ram_position;
