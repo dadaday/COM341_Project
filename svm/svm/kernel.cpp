@@ -146,7 +146,7 @@ namespace svm
                 << priorities.top().priority << std::endl;
                 // ToDo: Process the timer interrupt for the Priority Queue
 				//  scheduler
-                if (processes.size() < 2) {
+                if (priorities.size() < 2) {
                     std::cout << std::endl << "Only one process. No scheduling necessary" << std::endl;
                     return;
                 }
@@ -213,7 +213,9 @@ namespace svm
         }
         else if (scheduler == Priority) {
             srand (time(NULL));
-            process.priority = (Process::process_priority_type) rand() % 4;
+            Process::process_priority_type prio = rand() % 4;
+            process.priority = prio
+            std::cout << "SET Priority to " << prio << std::endl;
             priorities.push(process);
             // to avoid messing with svm.cpp code in order to get additional
             // info about the files priorities
