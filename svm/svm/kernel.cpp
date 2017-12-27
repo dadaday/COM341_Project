@@ -140,18 +140,48 @@ namespace svm
 			};
 		} else if (scheduler == Priority) {
 			board.pic.isr_0 = [&]() {
-
-                std::cout << "Priority of the current process " << priorities.top().id << ": " 
-                << priorities.top().priority << std::endl;
                 // ToDo: Process the timer interrupt for the Priority Queue
 				//  scheduler
+
                 if (priorities.size() < 2) {
                     std::cout << std::endl << "Only one process. No scheduling necessary" << std::endl;
                     return;
                 }
 
+		
                 std::cout << std::endl << "Processing the timer interrupt" << std::endl;
+		std::cout << "Priority of the current process " << priorities.top().id << ": " 
+                << priorities.top().priority << std::endl;
+
                 ++_cycles_passed_after_preemption;
+
+		if (_cycles_passed_after_preemption > _MAX_CYCLES_BEFORE_PREEMPTION) {
+			Process temp = priorities.top();
+			std::cout << "Lowering the priority for process " << temp.id << std::endl;
+			priorities.pop();
+
+			if (temp.priority > 0) {
+				temp.priority--;
+			}
+			else
+				temp.priority = 9;
+
+			temp.registers = board.cpu.registers;
+			temp.state = Process::States::Ready;
+			if (temp.priority > priorities.top().priority) {
+				std::cout << "Current process " << temp.id << " still has the highest priority" << std::endl;
+				priorities.push(temp);
+			}
+			else {
+				priorities.push(temp);
+				Process t = priorities.top();
+				std::cout << "saving all registers from the CPU to the PCB of the previous process" << std::endl;
+				board.cpu.registers = t.registers;
+				std::cout<< "Restoring all the registers from the PCB to CPU of the process next in priority" << std::endl;
+				t.state = Process::States::Running;
+			}
+			_cycles_passed_after_preemption = 1;
+		}
 
 			};
 
@@ -220,6 +250,7 @@ namespace svm
             // the priority scheduler for this task 
             // will be simplified in following manner:
             // the priority will be some random number (0-9)
+            // higher numbers have higher priority
         }
         else {
             processes.push_back(process);
