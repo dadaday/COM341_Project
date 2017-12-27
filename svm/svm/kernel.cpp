@@ -141,6 +141,12 @@ namespace svm
 			};
 		} else if (scheduler == Priority) {
 			board.pic.isr_0 = [&]() {
+
+                std::cout << "Priorities of processes currently in memory "
+                for (q = priorities.begin(); q != priorities.end(); q++) {
+                    std::cout << q.priority << " ";
+                }
+                std::endl;
 				// ToDo: Process the timer interrupt for the Priority Queue
 				//  scheduler
                 if (processes.size() < 2) {
@@ -151,8 +157,6 @@ namespace svm
                 std::cout << std::endl << "Processing the timer interrupt" << std::endl;
                 ++_cycles_passed_after_preemption;
 
-
-
 			};
 
 			board.pic.isr_3 = [&]() {
@@ -160,7 +164,20 @@ namespace svm
 				//  Queue scheduler
                 std::cout << std::endl << "Processing the first software interrupt" << std::endl;
 				// Unload the current process
+                std::cout << "Unloading the current process " << priorities.top().id <<
+                            " with priority " << priorities.top().priority << std::endl;
+                priorities.pop();
 
+                if (priorities.empty()) {
+                    board.Stop();
+                }
+                else {
+                    Process t = priorities.top();
+                    board.cpu.registers = t.registers;
+                    priorities.pop();
+                    t.state = Process::States::Running;
+                    priorities.push(t);
+                }
 			};
 		}
 
@@ -200,7 +217,7 @@ namespace svm
         else if (scheduler == Priority) {
             srand (time(NULL));
             process.priority = (Process::process_priority_type) rand() % 4;
-            priorities.push_back(process);
+            priorities.push(process);
             // to avoid messing with svm.cpp code in order to get additional
             // info about the files priorities
             // the priority scheduler for this task 
