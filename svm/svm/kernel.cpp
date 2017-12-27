@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 namespace svm
 {
@@ -149,13 +151,16 @@ namespace svm
                 std::cout << std::endl << "Processing the timer interrupt" << std::endl;
                 ++_cycles_passed_after_preemption;
 
+
+
 			};
 
 			board.pic.isr_3 = [&]() {
 				// ToDo: Process the first software interrupt for the Priority
 				//  Queue scheduler
-
+                std::cout << std::endl << "Processing the first software interrupt" << std::endl;
 				// Unload the current process
+
 			};
 		}
 
@@ -193,7 +198,14 @@ namespace svm
             });
         }
         else if (scheduler == Priority) {
-            
+            srand (time(NULL));
+            process.priority = (Process::process_priority_type) rand() % 4;
+            priorities.push_back(process);
+            // to avoid messing with svm.cpp code in order to get additional
+            // info about the files priorities
+            // the priority scheduler for this task 
+            // will be simplified in following manner:
+            // the priority will be some random number (0-3)
         }
         else {
             processes.push_back(process);
