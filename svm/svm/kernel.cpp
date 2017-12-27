@@ -142,12 +142,9 @@ namespace svm
 		} else if (scheduler == Priority) {
 			board.pic.isr_0 = [&]() {
 
-                std::cout << "Priorities of processes currently in memory "
-                for (q = priorities.begin(); q != priorities.end(); q++) {
-                    std::cout << q.priority << " ";
-                }
-                std::endl;
-				// ToDo: Process the timer interrupt for the Priority Queue
+                std::cout << "Priority of the current process " << priorities.top().id << ": " 
+                << priorities.top().priority << std::endl;
+                // ToDo: Process the timer interrupt for the Priority Queue
 				//  scheduler
                 if (processes.size() < 2) {
                     std::cout << std::endl << "Only one process. No scheduling necessary" << std::endl;
