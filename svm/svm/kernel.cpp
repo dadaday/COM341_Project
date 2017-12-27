@@ -95,7 +95,6 @@ namespace svm
 
 				std::cout << std::endl << "Processing the timer interrupt" << std::endl;
 				++_cycles_passed_after_preemption;
-				
 				if (_cycles_passed_after_preemption > _MAX_CYCLES_BEFORE_PREEMPTION) {
 					process_list_type::size_type next_process_index = (_current_process_index + 1) % processes.size();
 					std::cout << "The process " << processes[_current_process_index].id
@@ -212,16 +211,15 @@ namespace svm
             });
         }
         else if (scheduler == Priority) {
-            srand (time(NULL));
-            Process::process_priority_type prio = rand() % 4;
-            process.priority = prio
+            Process::process_priority_type prio = rand() % 10;
+            process.priority = prio;
             std::cout << "SET Priority to " << prio << std::endl;
             priorities.push(process);
             // to avoid messing with svm.cpp code in order to get additional
             // info about the files priorities
             // the priority scheduler for this task 
             // will be simplified in following manner:
-            // the priority will be some random number (0-3)
+            // the priority will be some random number (0-9)
         }
         else {
             processes.push_back(process);
