@@ -51,6 +51,7 @@ namespace svm
 
         private:
             // TODO: select a data structure for your frame allocator
+			std::stack<page_entry_type> free_physical_frames;
     };
 }
 

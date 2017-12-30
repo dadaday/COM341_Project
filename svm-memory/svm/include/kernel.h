@@ -24,7 +24,8 @@ namespace svm
             };
 
             typedef std::deque<Process> process_list_type;
-            typedef std::priority_queue<Process> process_priorities_type;
+            typedef std::deque<Process> process_priorities_type;
+	
 
             Board board;
 
@@ -70,10 +71,13 @@ namespace svm
             //          );
 
         private:
-            static const unsigned int _MAX_CYCLES_BEFORE_PREEMPTION = 2;
-
+            static const unsigned int _MAX_CYCLES_BEFORE_PREEMPTION = 100;
+	    
             Process::process_id_type _last_issued_process_id;
             Memory::ram_type::size_type _last_ram_position;
+	    
+	    
+	    Memory::ram_size_type _free_memory_index;
 
             unsigned int _cycles_passed_after_preemption;
             process_list_type::size_type _current_process_index;
