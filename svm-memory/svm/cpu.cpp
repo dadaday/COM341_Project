@@ -53,12 +53,9 @@ namespace svm
                     // ...
             }
             registers.ip += 2;
-        /*
-         *  TODO:
-         *
-         *      } else if (instruction ==
-         *                     CPU::LDA_OPCODE) {
-         *          1. Get a page index and physical address offset from the MMU
+	} else if (instruction == CPU:: LDA_OPCODE) {
+		
+		         /*          1. Get a page index and physical address offset from the MMU
          *               for a virtual address in 'data'
          *          2. Get the page from the current page table in the MMU with
          *               the acquired index
@@ -73,23 +70,111 @@ namespace svm
          *              2. Read or write (for ST...) from/to the physical memory
          *                   with the calculated address
          *              3. Increment the instruction pointer
-         *
-         *      } else if (instruction ==
-         *                     CPU::LDB_OPCODE) {
-         *          ...
-         *
-         *      } else if (...
-         *          ...
-         *
-         *      } else if (instruction ==
-         *                     CPU::STA_OPCODE) {
-         *          ...
-         *
          */
-        } else {
+		 
+		Memory::page_index_offset_pair_type page_offset_i = _memory.GetPageIndexAndOffsetForVirtualAddress(data);
+		Memory::page_entry_type frame = _memory.page_table->at(page_offset_i.first);//2. Getting page from current page table
+		
+		if(frame == Memory::INVALID_PAGE) {
+			int temp = registers.a;
+			registers.a = page_offset_i.first;
+			_pic.isr_4();
+			registers.a = temp;
+		} else {
+			registers.a = _memory.ram[frame + page_offset_i.second];
+			registers.ip += 2;
+			++instruction;
+		}
+   	  }
+      else if (instruction == CPU:: LDB_OPCODE) {
+		
+		Memory::page_index_offset_pair_type page_offset_i = _memory.GetPageIndexAndOffsetForVirtualAddress(data);
+		Memory::page_entry_type frame = _memory.page_table->at(page_offset_i.first);
+		
+		if(frame == Memory::INVALID_PAGE) {
+			int temp = registers.a;
+			registers.b = page_offset_i.first;
+			_pic.isr_4();
+			registers.b = temp;
+		} else {
+			registers.b = _memory.ram[frame + page_offset_i.second];
+			registers.ip += 2;
+			++instruction;
+
+		}
+	  }
+  	  else if (instruction == CPU:: LDC_OPCODE) {
+	  	
+		Memory::page_index_offset_pair_type page_offset_i = _memory.GetPageIndexAndOffsetForVirtualAddress(data);
+		Memory::page_entry_type frame = _memory.page_table->at(page_offset_i.first);
+		
+		if(frame == Memory::INVALID_PAGE) {
+			int temp = registers.c;
+			registers.c = page_offset_i.first;
+			_pic.isr_4();
+			registers.c = temp;
+		} else {
+			registers.c = _memory.ram[frame + page_offset_i.second];
+			registers.ip += 2;
+			++instruction;
+
+		}
+	  }
+	  else if (instruction == CPU:: STA_OPCODE) {
+	  	
+		Memory::page_index_offset_pair_type page_offset_i = _memory.GetPageIndexAndOffsetForVirtualAddress(data);
+		Memory::page_entry_type frame = _memory.page_table->at(page_offset_i.first);
+		
+		if(frame == Memory::INVALID_PAGE) {
+			int temp = registers.a;
+			registers.a = page_offset_i.first;
+			_pic.isr_4();
+			registers.a = temp;
+		} else {
+			_memory.ram[frame + page_offset_i.second] = registers.a;
+			registers.ip += 2;
+			++instruction;
+
+		}
+	  }
+	  else if (instruction == CPU:: STB_OPCODE) {
+	  
+	   	Memory::page_index_offset_pair_type page_offset_i = _memory.GetPageIndexAndOffsetForVirtualAddress(data);
+		Memory::page_entry_type frame = _memory.page_table->at(page_offset_i.first);
+		
+		if(frame == Memory::INVALID_PAGE) {
+			int temp = registers.b;
+			registers.b = page_offset_i.first;
+			_pic.isr_4();
+			registers.b = temp;
+		} else {
+			_memory.ram[frame + page_offset_i.second] = registers.b; 
+			registers.ip += 2;
+			++instruction;
+
+		}
+	  }
+	  else if (instruction == CPU:: STC_OPCODE) {
+	  	
+		Memory::page_index_offset_pair_type page_offset_i = _memory.GetPageIndexAndOffsetForVirtualAddress(data);
+		Memory::page_entry_type frame = _memory.page_table->at(page_offset_i.first);
+		
+		if(frame == Memory::INVALID_PAGE) {
+			int temp = registers.c;
+			registers.c = page_offset_i.first;
+			_pic.isr_4();
+			registers.c = temp;
+		} else {
+			_memory.ram[frame + page_offset_i.second] = registers.c;
+			registers.ip += 2;
+			++instruction;
+		}
+	  }	  
+      else {
             std::cerr << "CPU: invalid opcode data. Skipping..."
                       << std::endl;
             registers.ip += 2;
-        }
-    }
-}
+      }
+    
+	}
+} 
